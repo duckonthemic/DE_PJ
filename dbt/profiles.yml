@@ -1,0 +1,26 @@
+# dbt Profiles Configuration
+# This file should be placed in ~/.dbt/ for production
+# For development, we keep it in the project
+
+enterprise_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      port: 5433
+      user: postgres
+      password: postgres
+      dbname: data_warehouse
+      schema: dw
+      threads: 4
+    
+    prod:
+      type: postgres
+      host: "{{ env_var('DW_DB_HOST') }}"
+      port: "{{ env_var('DW_DB_PORT') | int }}"
+      user: "{{ env_var('DW_DB_USER') }}"
+      password: "{{ env_var('DW_DB_PASSWORD') }}"
+      dbname: "{{ env_var('DW_DB_NAME') }}"
+      schema: dw
+      threads: 8

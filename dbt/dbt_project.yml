@@ -1,0 +1,50 @@
+# dbt Project Configuration
+name: 'enterprise_analytics'
+version: '1.0.0'
+config-version: 2
+
+profile: 'enterprise_analytics'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Model configurations
+models:
+  enterprise_analytics:
+    # Staging models
+    staging:
+      +schema: staging
+      +materialized: view
+    
+    # Warehouse core models
+    warehouse:
+      +schema: dw
+      +materialized: table
+      dimensions:
+        +materialized: table
+      facts:
+        +materialized: incremental
+        +unique_key: id
+    
+    # Data marts
+    marts:
+      +schema: mart
+      +materialized: table
+      customer_360:
+        +materialized: table
+      reconciliation:
+        +materialized: table
+
+# Variables
+vars:
+  start_date: '2024-01-01'
+  end_date: '2024-12-31'
