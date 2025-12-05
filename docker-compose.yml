@@ -8,9 +8,10 @@ services:
     image: postgres:15-alpine
     container_name: ecommerce_source_db
     environment:
-      POSTGRES_DB: ecommerce_source
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${SOURCE_DB_NAME:-ecommerce_source}
+      POSTGRES_USER: ${SOURCE_DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${SOURCE_DB_PASSWORD}
+      POSTGRES_HOST_AUTH_METHOD: trust
     ports:
       - "5432:5432"
     volumes:
@@ -31,9 +32,9 @@ services:
     image: postgres:15-alpine
     container_name: data_warehouse_db
     environment:
-      POSTGRES_DB: data_warehouse
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${DW_DB_NAME:-data_warehouse}
+      POSTGRES_USER: ${DW_DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DW_DB_PASSWORD}
     ports:
       - "5433:5432"
     volumes:
@@ -55,8 +56,8 @@ services:
     container_name: minio_storage
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -81,7 +82,7 @@ services:
         condition: service_healthy
     entrypoint: >
       /bin/sh -c "
-      mc alias set myminio http://minio:9000 minioadmin minioadmin;
+      mc alias set myminio http://minio:9000 $${MINIO_ACCESS_KEY:-minioadmin} $${MINIO_SECRET_KEY};
       mc mb myminio/raw --ignore-existing;
       mc mb myminio/staging --ignore-existing;
       mc mb myminio/processed --ignore-existing;
@@ -99,10 +100,10 @@ services:
     container_name: metabase_bi
     environment:
       MB_DB_TYPE: postgres
-      MB_DB_DBNAME: metabase
+      MB_DB_DBNAME: ${METABASE_DB_NAME:-metabase}
       MB_DB_PORT: 5432
-      MB_DB_USER: metabase
-      MB_DB_PASS: metabase
+      MB_DB_USER: ${METABASE_DB_USER:-metabase}
+      MB_DB_PASS: ${METABASE_DB_PASSWORD}
       MB_DB_HOST: postgres-metabase
     ports:
       - "3000:3000"
@@ -116,9 +117,9 @@ services:
     image: postgres:15-alpine
     container_name: metabase_db
     environment:
-      POSTGRES_DB: metabase
-      POSTGRES_USER: metabase
-      POSTGRES_PASSWORD: metabase
+      POSTGRES_DB: ${METABASE_DB_NAME:-metabase}
+      POSTGRES_USER: ${METABASE_DB_USER:-metabase}
+      POSTGRES_PASSWORD: ${METABASE_DB_PASSWORD}
     volumes:
       - postgres_metabase_data:/var/lib/postgresql/data
     healthcheck:
