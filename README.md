@@ -1,212 +1,97 @@
 # Enterprise Customer & Revenue Analytics Platform
 
-## 🎯 Overview
+**Data Engineering Portfolio Project**
 
-Enterprise-grade analytics platform for customer insights and revenue reconciliation, featuring:
+---
 
-- **Data Warehouse Modernization**: Transform Excel/OLTP to modern DW/Lakehouse
-- **Customer 360 & Marketing Analytics**: RFM, LTV, Customer Segmentation
-- **Payment & Finance Reconciliation**: Order-Payment-ERP matching
+## 📖 Overview
 
-## 📁 Project Structure
+A comprehensive, end-to-end Data Engineering platform simulating a real-world E-commerce environment. This project demonstrates the transformation of raw transactional data into actionable Customer 360 insights using modern Data Warehouse architecture.
 
+**Key Features:**
+- **Modern Data Stack**: Docker, PostgreSQL, Python, Airflow (concept), data testing.
+- **Star Schema Data Warehouse**: Normalized dimension & fact tables for scalable analytics.
+- **Customer 360 Mart**: Single view of customer with RFM segmentation and LTV analysis.
+- **Data Quality & Reconciliation**: Automated checks ensuring orders match payments and invoices.
+
+---
+
+## 🏗 Architecture
+
+```mermaid
+graph LR
+    Source[(PostgreSQL Source)] --> |Extract| Staging
+    Staging --> |Transform| DW[(Data Warehouse)]
+    DW --> |Aggregations| Mart[(Data Marts)]
+    Mart --> |Visualize| BI[Metabase Dashboard]
 ```
-Enterperise_DE/
-├── 📂 airflow/                    # Airflow DAGs & configurations
-│   ├── dags/                      # DAG definitions
-│   ├── plugins/                   # Custom operators & hooks
-│   └── config/                    # Airflow configuration
-│
-├── 📂 config/                     # Global configurations
-│   ├── database.yaml              # Database connections
-│   ├── data_quality.yaml          # DQ rules configuration
-│   └── logging.yaml               # Logging configuration
-│
-├── 📂 data/                       # Data storage (gitignored)
-│   ├── raw/                       # Raw data from sources
-│   ├── staging/                   # Staging/Bronze layer
-│   ├── processed/                 # Silver/processed data
-│   └── gold/                      # Gold/mart layer
-│
-├── 📂 dbt/                        # dbt project
-│   ├── models/                    # dbt models
-│   │   ├── staging/               # Staging models
-│   │   ├── warehouse/             # DW core models
-│   │   └── marts/                 # Data marts
-│   ├── seeds/                     # Seed data
-│   ├── tests/                     # dbt tests
-│   └── macros/                    # Custom macros
-│
-├── 📂 docker/                     # Docker configurations
-│   ├── postgres/                  # PostgreSQL setup
-│   ├── airflow/                   # Airflow setup
-│   ├── metabase/                  # Metabase setup
-│   └── minio/                     # MinIO setup
-│
-├── 📂 docs/                       # Documentation
-│   ├── architecture/              # Architecture diagrams
-│   ├── business_requirements/     # Business requirements
-│   ├── data_dictionary/           # Data dictionary
-│   └── test_reports/              # Test reports
-│
-├── 📂 great_expectations/         # Great Expectations project
-│   ├── expectations/              # Expectation suites
-│   ├── checkpoints/               # Validation checkpoints
-│   └── plugins/                   # Custom expectations
-│
-├── 📂 notebooks/                  # Jupyter notebooks
-│   ├── exploration/               # Data exploration
-│   ├── analysis/                  # Analysis notebooks
-│   └── prototyping/               # Prototyping
-│
-├── 📂 plan/                       # Project planning
-│   └── Plan_Checklist.md          # Sprint checklist
-│
-├── 📂 scripts/                    # Utility scripts
-│   ├── data_generation/           # Data generation scripts
-│   ├── database/                  # Database setup scripts
-│   └── utils/                     # Helper utilities
-│
-├── 📂 src/                        # Main source code
-│   ├── __init__.py
-│   ├── config/                    # Configuration management
-│   ├── connectors/                # Database/API connectors
-│   ├── data_quality/              # DQ validation logic
-│   ├── etl/                       # ETL pipelines
-│   ├── models/                    # Data models (Pydantic)
-│   ├── reconciliation/            # Reconciliation logic
-│   └── utils/                     # Utilities
-│
-├── 📂 tests/                      # Test suite
-│   ├── unit/                      # Unit tests
-│   ├── integration/               # Integration tests
-│   ├── e2e/                       # End-to-end tests
-│   └── data_quality/              # Data quality tests
-│
-├── 📄 .env.example                # Environment variables template
-├── 📄 .gitignore                  # Git ignore rules
-├── 📄 docker-compose.yml          # Docker compose
-├── 📄 Makefile                    # Make commands
-├── 📄 pyproject.toml              # Python project config
-├── 📄 README.md                   # This file
-└── 📄 requirements.txt            # Python dependencies
-```
+
+### Components
+1.  **Source System**: Simulated E-commerce DB (Orders, Products, Customers).
+2.  **Core DW**: Standard Star Schema (`dim_customer`, `fact_sales`, etc.).
+3.  **Analytics Layer**: 
+    - **Customer 360**: Unified profile & behavior metrics.
+    - **RFM Analysis**: Recency, Frequency, Monetary scoring.
+    - **Financial Reconciliation**: Automated 3-way matching.
+
+---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-
-- Python 3.10+
 - Docker & Docker Compose
-- Git
+- Python 3.10+
 
-### Setup
+### Setup & Run
+1.  **Clone the repository**:
+    ```bash
+    git clone <repo-url>
+    cd Enterperise_DE
+    ```
 
-```bash
-# 1. Clone repository
-git clone <repo-url>
-cd Enterperise_DE
+2.  **Start Services**:
+    ```bash
+    docker-compose up -d
+    ```
 
-# 2. Create virtual environment
-python -m venv venv
-.\venv\Scripts\activate  # Windows
+3.  **Run ETL Pipeline**:
+    ```bash
+    # Run full load pipeline
+    python src/transform/run_dw_etl.py
+    
+    # Run Customer 360 mart build
+    python src/transform/load_customer360.py
+    ```
 
-# 3. Install dependencies
-pip install -r requirements.txt
+4.  **Check Data Quality**:
+    ```bash
+    python src/data_quality/validator.py
+    ```
 
-# 4. Setup environment variables
-copy .env.example .env
+---
 
-# 5. Start infrastructure
-docker-compose up -d
+## 📊 Analytics & Dashboards
 
-# 6. Initialize databases
-python scripts/database/init_db.py
-```
+### Customer Segmentation (RFM)
+Customers are segmented based on their purchasing behavior:
+- **Champions**: High spenders, recent buyers.
+- **Loyal Customers**: Consistent buyers over time.
+- **At Risk**: High value but haven't purchased recently.
 
-## 📊 Architecture
+### Reconciliation Report
+Tracks discrepancies between Order System and Payment Gateway to prevent revenue leakage.
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         Data Sources                                 │
-├────────────┬────────────┬────────────┬────────────┬────────────────┤
-│  E-commerce│  Payment   │    ERP/    │  Marketing │   External     │
-│   Database │  Gateway   │ Accounting │  Channels  │     APIs       │
-└─────┬──────┴─────┬──────┴─────┬──────┴─────┬──────┴───────┬────────┘
-      │            │            │            │              │
-      └────────────┴────────────┴────────────┴──────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                    Ingestion Layer (Airflow)                        │
-└─────────────────────────────────┬───────────────────────────────────┘
-                                  │
-                                  ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│              Bronze/Staging Layer (MinIO/S3 - Parquet)              │
-└─────────────────────────────────┬───────────────────────────────────┘
-                                  │
-                                  ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                    Transform Layer (dbt + SQL)                      │
-└─────────────────────────────────┬───────────────────────────────────┘
-                                  │
-                                  ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│              Silver/DW Core (PostgreSQL - Star Schema)              │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐  │
-│  │dim_cust  │ │dim_prod  │ │dim_date  │ │fact_order│ │fact_pay  │  │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────┘ └──────────┘  │
-└─────────────────────────────────┬───────────────────────────────────┘
-                                  │
-                                  ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                         Gold/Mart Layer                             │
-│  ┌────────────────┐ ┌────────────────┐ ┌────────────────┐          │
-│  │mart_customer360│ │ mart_rfm_seg   │ │mart_reconcile  │          │
-│  └────────────────┘ └────────────────┘ └────────────────┘          │
-└─────────────────────────────────┬───────────────────────────────────┘
-                                  │
-                                  ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                   BI / Visualization (Metabase)                     │
-└─────────────────────────────────────────────────────────────────────┘
-```
+---
 
-## 🛠️ Technology Stack
+## 🛠 Technology Stack
 
-| Component | Technology |
-|-----------|------------|
-| **Source Database** | PostgreSQL |
-| **Data Lake** | MinIO (S3-compatible) |
-| **File Format** | Parquet |
-| **Orchestration** | Apache Airflow |
-| **Transformation** | dbt |
-| **Data Quality** | Great Expectations, Soda, dbt tests |
-| **BI/Dashboard** | Metabase |
-| **Testing** | pytest, Great Expectations |
-| **CI/CD** | GitHub Actions |
-| **Containerization** | Docker, Docker Compose |
+- **Database**: PostgreSQL 14
+- **ETL Language**: Python 3.10 (Pandas, SQLAlchemy)
+- **Containerization**: Docker
+- **Testing**: pytest (Unit), Great Expectations (Data Quality logic)
+- **CI/CD**: GitHub Actions
 
-## 📅 Sprint Roadmap
-
-- **Sprint 1**: Data Sources & Staging Layer
-- **Sprint 2**: Data Warehouse Core & Reconciliation
-- **Sprint 3**: Customer 360 & Marketing Analytics
-- **Sprint 4**: Data Quality, Monitoring & Portfolio
-
-## 📖 Documentation
-
-- [Business Requirements](docs/business_requirements/)
-- [Architecture Design](docs/architecture/)
-- [Data Dictionary](docs/data_dictionary/)
-- [Test Reports](docs/test_reports/)
-
-## 👥 Team
-
-- **Data Engineer**: Pipeline, DW, ETL/ELT
-- **QC/QA Engineer**: Test Strategy, Data Quality, Automation
+---
 
 ## 📝 License
-
-MIT License
+MIT License. Created for Portfolio demonstration.
