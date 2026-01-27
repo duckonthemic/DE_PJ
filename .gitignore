@@ -211,3 +211,9 @@ docs/_build/
 .ruff_cache/
 .dmypy.json
 dmypy.json
+
+# ===================
+# Project Docs & Plan
+# ===================
+plan/
+docs/
